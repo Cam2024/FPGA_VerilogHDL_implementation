@@ -1,0 +1,55 @@
+module transmitter_controller(clk, send_key, reset_key, send_pulse, reset_pulse);
+	input clk;
+	input send_key;
+	input reset_key;
+	output reg send_pulse; 
+	output reg reset_pulse;
+	
+	localparam initial_state = 3'b100;
+	localparam reset_state = 3'b010;
+	localparam send_state = 3'b001;
+
+	reg[2:0] current_state;
+	reg[2:0] next_state;
+
+	initial begin
+    current_state = initial_state;
+	end
+	
+	always @(posedge clk)
+		begin
+			current_state <= next_state;
+		end
+
+	always @(current_state, send_key, reset_key)
+		begin
+			send_pulse = 1'b0;
+			reset_pulse = 1'b0;
+			case (current_state)
+			
+			initial_state:
+				begin
+					if (reset_key)
+						next_state = reset_state;
+					else if(send_key)
+						next_state = send_state;
+					else
+						next_state = initial_state;
+				end
+
+			reset_state:
+				begin
+					reset_pulse = 1'b1;
+					next_state = initial_state;
+				end
+
+			send_state:
+				begin
+					send_pulse = 1'b1;
+					next_state = initial_state;
+				end
+			endcase
+			
+		end
+
+endmodule
