@@ -19,21 +19,23 @@ module shift_register(clk, baud_clk, data_frame, shift, load, reset, tx);
 	 else if (load) 
 		 begin
 			// Start sending data
-			shift_register <= {1'b1, data_frame};
+			shift_register <= {data_frame,1'b1};
 		 end 
 	 else if (shift) 
 		 begin
 			if(baud_clk == 1'b1) 
 				begin				
-					shift_register <= {shift_register[10:0], 1'b1};			
+					shift_register <= {1'b1, shift_register[11:1]};			
 				end
 		 end
 	 else
 		begin
-			shift_register <= 12'hFFF;
+			if(data_frame[1] == 1'b1)
+				begin
+					shift_register <= 12'hFFF;
+				end
 		end
   end
-  assign tx = shift_register[11];
-  
+  assign tx = shift_register[0];
 endmodule
 	
