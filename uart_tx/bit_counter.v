@@ -1,28 +1,24 @@
-module bit_counter(clk, baud_pulse, counter_flag);
+module bit_counter(clk, count_flag, count_done);
 	input clk;
-	input baud_pulse;
-	output reg counter_flag;
+	input count_flag;
+	output reg count_done;
 	
-	reg [3:0]count;
+	reg [3:0]count = 4'h0;
 	
 	always @(posedge clk)
 		begin
-			if(baud_pulse)
+			if(count_flag)
 				begin
-					if(count < 4'hC)
-						begin
-							count <= count + 1'b1;
-						end
+					count = count + 1'b1;
 				end
-			else if(count == 4'hC)
+			if(count == 4'hB)
 				begin
-					count <= 4'h0;
-					counter_flag <= 1'b1;
+					count_done = 1'b1;
+					count = 4'h0;
 				end
 			else
 				begin
-					counter_flag <= 1'b0;
+					count_done = 1'b0;
 				end
 		end
-	
 endmodule
