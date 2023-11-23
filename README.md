@@ -17,7 +17,7 @@ Shift register view:
 Receiver RTL view:
 ![rx_RTL](https://github.com/Cam2024/FPGA_VerilogHDL_implementation/assets/89662823/8a5e936d-82f1-4dcf-a25e-e35cd174b5d8)
 
-Customized baud rate generator:
+Customized half baud rate generator:
 ![baud_rx](https://github.com/Cam2024/FPGA_VerilogHDL_implementation/assets/89662823/793de947-5bdc-4b37-881c-3408073b161e)
 
 See file for detailed design drawings
