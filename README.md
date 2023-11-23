@@ -3,7 +3,8 @@
 The receiver side of serial communication uses a special baud rate generator that starts generating the baud rate when the first falling edge signal is detected and the first baud rate is pulsed at half a baud cycle and each subsequent pulse is a full baud cycle. This means that each sampling pulse is in the middle of the signal, which can effectively reduce the sampling error caused by signal interference.
 
 Transmitter RTL view:
-![image](https://github.com/Cam2024/FPGA_VerilogHDL_implementation/assets/89662823/31842ef5-3910-4ee8-81db-0a2ed89f9551)
+![RTL](https://github.com/Cam2024/FPGA_VerilogHDL_implementation/assets/89662823/405feccd-7d3a-4fa1-a7ea-854421292f77)
+
 Block view:
 ![block](https://github.com/Cam2024/FPGA_VerilogHDL_implementation/assets/89662823/a5edb079-d59c-482e-b7b8-99355abbab3f)
 
