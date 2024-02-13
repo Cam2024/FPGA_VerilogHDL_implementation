@@ -1,0 +1,79 @@
+module rx_controller(
+	input clk, // system clock
+	input rst,  // reset pulse from single pulser
+	input rx,
+	input baud_clk,  // baud pulse
+	input count_done,  // count done for data bits
+	output reg baud_en, // generate baud pulse
+	output reg shift_pulse, // shift pulse
+	output reg done_pulse // load pulse
+);
+	
+	reg current_state = 1'b0; // current state
+	reg next_state = 1'b0;  //next state
+	reg shift_en = 1'b0;  // shift signal
+
+	localparam wait_state = 1'b0; // wait for send
+	localparam shift_state = 1'b1; // state for shift data
+	
+	initial
+		begin
+			baud_en = 1'b0;
+		end
+	
+	always @(posedge clk) // poseedge clock and reset key
+		begin
+			if(!rst)
+				begin
+					current_state <= wait_state; // reset state
+				end
+			else
+				begin
+					current_state <= next_state; // update state
+				end
+		end
+	
+	always @(current_state, rx, baud_clk, count_done) // trigger condition
+		begin
+			shift_pulse = 1'b0;
+			case (current_state) // Selection state
+			wait_state:
+				begin
+					baud_en = 1'b0;
+					done_pulse = 1'b0;
+					if (!rx) // when send
+						begin
+							next_state = shift_state; // next state
+						end
+					else
+						begin
+							next_state = wait_state; // keep state
+						end
+				end
+				
+			shift_state:
+				begin
+					baud_en = 1'b1;
+					if (count_done) // count done signal from bit count
+						begin
+							done_pulse = 1'b1;
+							next_state = wait_state; // next state
+						end
+					else
+						begin
+							if(baud_clk) // when baud pulse
+								begin
+									shift_pulse = 1'b1; // shift signal
+								end
+							next_state <= shift_state; // keep state
+						end
+				end
+				
+			default: 
+				begin
+					next_state <= wait_state;
+				end
+			endcase
+		end
+	
+endmodule

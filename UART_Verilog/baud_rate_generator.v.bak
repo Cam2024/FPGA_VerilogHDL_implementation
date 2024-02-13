@@ -1,0 +1,49 @@
+module baud_rate_generator(
+	input clk,   // 50MHz system clock
+	input rst,
+	input enable,
+	output reg baud_pulse   // UART transmitter
+);
+	reg [10:0] count = 11'h0;  // counter for counting baud rate
+	
+	// 38400 baud rate needed count (11 bits here: 101 0001 0101)
+	localparam DIVIDER = 11'h515; // where baud rate is 38400, hex515 = (50000000 / 38400) - 1	
+	parameter counter_logic = 11'h28A; // Midpoint sampling for receiver and very easy to change externally for the transmitter
+	
+	always @(posedge clk) 
+		begin
+			if(!rst)
+				begin
+					count <= 11'h0; // reset counter
+				end
+			else
+				begin
+					if(enable)
+						begin
+							if(count < DIVIDER)
+								begin
+									count <= count + 1'b1;
+								end
+							else
+								begin
+									count <= 11'h0;
+								end
+						end
+					else
+						count <= 11'h0;
+				end
+		end
+		
+	always @(count) 
+		begin
+			if (count == counter_logic) 
+				begin
+					baud_pulse = 1'b1; // baud pulse
+				end 
+			else 
+				begin
+					baud_pulse = 1'b0; // keep low
+				end
+		end
+
+endmodule

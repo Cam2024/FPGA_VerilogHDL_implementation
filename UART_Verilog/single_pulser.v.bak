@@ -1,0 +1,76 @@
+module single_pulser(
+	input clk,  // Clock signal
+	input rst,
+	input send,  // Input button signal
+	output reg pulse // Output pulse signal
+);
+	localparam IDLE = 2'b00;  // State parameter for state 0
+	localparam PULSE = 2'b01;  // State parameter for state 1
+	localparam WAIT = 2'b11;  // State parameter for state 2
+
+	reg[1:0] current_state;  // Current state variable
+	reg[1:0] next_state;  // Next state variable
+
+	initial
+		begin
+			current_state = IDLE;
+			next_state = IDLE;
+		end
+	
+	always @(posedge clk) // when positive edge of clk 
+		begin
+			if(!rst)
+				begin
+					current_state <= IDLE;
+				end
+			else
+				begin
+					current_state <= next_state;  // Update current state on the positive edge of the clock
+				end
+		end
+
+	always @(current_state, send) // when current_state and button change
+		begin
+			pulse = 1'b0;  // Initialize pulse to 0
+
+			case (current_state)
+
+			IDLE:
+				begin
+					if (!send)  // Buttons are low-trigger
+						begin
+							next_state = PULSE;  // Transition to state 1 when button is not pressed
+						end
+					else
+						begin
+							next_state = IDLE;  // Stay in state 0 when button is pressed
+						end
+				end
+
+			PULSE:
+				begin
+					pulse = 1'b1;  // Set pulse to 1 in state 1
+					if (!send)
+						begin
+							next_state = WAIT;  // Transition to state 2 when button is pressed
+						end
+					else
+						begin
+							next_state = IDLE;  // Return to state 0 when button is not pressed
+						end
+				end
+
+			WAIT:
+				begin
+					if (!send)
+						begin
+							next_state = WAIT;  // Stay in state 2 when button is pressed
+						end
+					else
+						begin
+							next_state = IDLE;  // Return to state 0 when button is not pressed
+						end
+				end
+			endcase
+		end
+endmodule

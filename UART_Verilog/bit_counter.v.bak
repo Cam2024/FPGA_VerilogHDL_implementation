@@ -1,0 +1,41 @@
+module bit_counter(
+	input clk, // 50MHz clock
+	input rst,
+	input count_flag, // count every shift pulse
+	output reg count_done // output pulse count done
+);
+
+	reg [3:0]count = 4'h0; // counter register
+	
+	always @(posedge clk)
+		begin
+			if(!rst)
+				begin
+					count <= 4'h0;
+				end
+			else
+				begin
+					if(count_flag)
+						begin
+							count <= count + 1'b1;
+						end
+					if(count_done)
+						begin
+							count <= 4'h0;
+						end
+				end
+		end
+		
+	always @(count)
+		begin
+			if(count == 4'hB)
+				begin
+					count_done = 1'b1; // count done pulse
+				end
+			else
+				begin
+					count_done = 1'b0; // reset count done pulse
+				end
+		end
+		
+endmodule
